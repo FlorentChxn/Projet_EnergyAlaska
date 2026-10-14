@@ -1,0 +1,20 @@
+package fr.sorbonne_u.components.hem2026e1.equipments.washer.interfaces;
+
+public interface WasherExternalControlI extends WasherConfigurationI {
+    public static boolean staticInvariants() throws Exception {
+        boolean ret = true;
+        ret &= WasherConfigurationI.staticInvariants();
+        return ret;
+    }
+    public WasherState getState() throws Exception;
+    public WasherMode getMode() throws Exception;
+    public WasherTemperature getTemperature() throws Exception;
+    public WasherSpinSpeed getSpinSpeed() throws Exception;
+    public void setMode(WasherMode mode) throws Exception;
+    public void setTemperature(WasherTemperature temperature) throws Exception;
+    public void setSpinSpeed(WasherSpinSpeed spinSpeed) throws Exception;
+    
+    public void isOnWasher() throws Exception;
+    public void resume() throws Exception;
+    public void suspend() throws Exception;
+}

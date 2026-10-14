@@ -1,0 +1,112 @@
+package fr.sorbonne_u.components.hem2026e1.equipments.generator;
+
+// Copyright Jacques Malenfant, Sorbonne Universite.
+// Jacques.Malenfant@lip6.fr
+//
+// This software is a computer program whose purpose is to provide a
+// basic component programming model to program with components
+// distributed applications in the Java programming language.
+//
+// This software is governed by the CeCILL-C license under French law and
+// abiding by the rules of distribution of free software.  You can use,
+// modify and/ or redistribute the software under the terms of the
+// CeCILL-C license as circulated by CEA, CNRS and INRIA at the following
+// URL "http://www.cecill.info".
+//
+// As a counterpart to the access to the source code and  rights to copy,
+// modify and redistribute granted by the license, users are provided only
+// with a limited warranty  and the software's author,  the holder of the
+// economic rights,  and the successive licensors  have only  limited
+// liability. 
+//
+// In this respect, the user's attention is drawn to the risks associated
+// with loading,  using,  modifying and/or developing or reproducing the
+// software by the user in light of its specific status of free software,
+// that may mean  that it is complicated to manipulate,  and  that  also
+// therefore means  that it is reserved for developers  and  experienced
+// professionals having in-depth computer knowledge. Users are therefore
+// encouraged to load and test the software's suitability as regards their
+// requirements in conditions enabling the security of their systems and/or 
+// data to be ensured and,  more generally, to use and operate it in the 
+// same conditions as regards security. 
+//
+// The fact that you are presently reading this means that you have had
+// knowledge of the CeCILL-C license and that you accept its terms.
+
+import fr.sorbonne_u.alasca.physical_data.MeasurementUnit;
+import fr.sorbonne_u.exceptions.AssertionChecking;
+
+// -----------------------------------------------------------------------------
+/**
+ * The interface <code>GeneratorConfigurationI</code> defines common
+ * configuration information for a generator component.
+ *
+ * <p><strong>Description</strong></p>
+ * 
+ * <p><strong>Invariants</strong></p>
+ * 
+ * <pre>
+ * invariant	{@code POWER_UNIT != null}
+ * invariant	{@code TENSION_UNIT != null}
+ * invariant	{@code CAPACITY_UNIT != null}
+ * invariant	{@code CONSUMPTION_UNIT != null}
+ * </pre>
+ * 
+ * <p>Created on : 2026-08-20</p>
+ * 
+ * @author	<a href="mailto:Jacques.Malenfant@lip6.fr">Jacques Malenfant</a>
+ */
+public interface		GeneratorConfigurationI
+{
+	// -------------------------------------------------------------------------
+	// Constants
+	// -------------------------------------------------------------------------
+
+	/** measurement unit for power used in this appliance.					*/
+	public static final MeasurementUnit	POWER_UNIT = MeasurementUnit.WATTS;
+	/** measurement unit for tension used in this appliance.				*/
+	public static final MeasurementUnit	TENSION_UNIT = MeasurementUnit.VOLTS;
+	/** capacity measurement unit for the generator.						*/
+	public static final MeasurementUnit	CAPACITY_UNIT = MeasurementUnit.LITRES;
+	/** fuel consumption measurement unit for the generator.				*/
+	public static final MeasurementUnit	CONSUMPTION_UNIT =
+												MeasurementUnit.LITRES_PER_HOUR;
+
+	// -------------------------------------------------------------------------
+	// Invariants
+	// -------------------------------------------------------------------------
+
+	/**
+	 * return true if the static invariants are observed, false otherwise.
+	 * 
+	 * <p><strong>Contract</strong></p>
+	 * 
+	 * <pre>
+	 * post	{@code true}	// no postcondition.
+	 * </pre>
+	 *
+	 * @return	true if the invariants are observed, false otherwise.
+	 */
+	public static boolean	staticInvariants()
+	{
+		boolean ret = true;
+		ret &= AssertionChecking.checkStaticInvariant(
+				POWER_UNIT != null,
+				GeneratorConfigurationI.class,
+				"POWER_UNIT != null");
+		ret &= AssertionChecking.checkStaticInvariant(
+				TENSION_UNIT != null,
+				GeneratorConfigurationI.class,
+				"TENSION_UNIT != null");
+		ret &= AssertionChecking.checkStaticInvariant(
+				CAPACITY_UNIT != null,
+				GeneratorConfigurationI.class,
+				"CAPACITY_UNIT != null");
+		ret &= AssertionChecking.checkStaticInvariant(
+				CONSUMPTION_UNIT != null,
+				GeneratorConfigurationI.class,
+				"CONSUMPTION_UNIT != null");
+		return ret;
+	}
+}
+// -----------------------------------------------------------------------------

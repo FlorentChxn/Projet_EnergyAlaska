@@ -1,0 +1,57 @@
+package fr.sorbonne_u.components.hem2026e1.equipments.washer.connections;
+
+import fr.sorbonne_u.components.ports.AbstractOutboundPort;
+import fr.sorbonne_u.exceptions.PreconditionException;
+import fr.sorbonne_u.components.ComponentI;
+import fr.sorbonne_u.components.hem2026e1.equipments.washer.interfaces.WasherUserCI;
+import fr.sorbonne_u.components.hem2026e1.equipments.washer.interfaces.WasherExternalControlCI;
+
+public class WasherExternalControlOutboundPort extends AbstractOutboundPort implements WasherExternalControlCI{
+	private static final long serialVersionUID = 1L;
+	public WasherExternalControlOutboundPort(ComponentI owner) throws Exception {
+		super(WasherExternalControlCI.class, owner);
+	}
+	public WasherExternalControlOutboundPort(String uri,ComponentI owner) throws Exception {
+		super(uri,WasherExternalControlCI.class,owner);
+	}
+	@Override
+    public WasherState getState() throws Exception {
+    	return ((WasherUserCI)this.getConnector()).getState();
+    }
+	@Override
+    public WasherMode getMode() throws Exception{
+    	return ((WasherUserCI)this.getConnector()).getMode();
+    }
+	@Override
+    public WasherTemperature getTemperature() throws Exception{
+    	return ((WasherUserCI)this.getConnector()).getTemperature();
+    }
+	@Override
+    public WasherSpinSpeed getSpinSpeed() throws Exception{
+    	return ((WasherUserCI)this.getConnector()).getSpinSpeed();
+    }
+	@Override
+    public void setMode(WasherMode mode) throws Exception{
+    	((WasherUserCI)this.getConnector()).setMode(mode);
+    }
+	@Override
+    public void setTemperature(WasherTemperature temperature) throws Exception{
+    	((WasherUserCI)this.getConnector()).setTemperature(temperature);
+    }
+	@Override
+    public void setSpinSpeed(WasherSpinSpeed spinSpeed) throws Exception{
+    	((WasherUserCI)this.getConnector()).setSpinSpeed(spinSpeed);
+    }
+	@Override
+    public void isOnWasher() throws Exception{
+    	((WasherUserCI)this.getConnector()).isOnWasher();
+    }
+	@Override
+    public void resume() throws Exception{
+    	((WasherUserCI)this.getConnector()).resume();
+    }
+	@Override
+    public void suspend() throws Exception{
+    	((WasherUserCI)this.getConnector()).suspend();
+    }
+}

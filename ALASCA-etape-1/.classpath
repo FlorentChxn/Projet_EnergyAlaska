@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="ALASCA-etape-1/BCM4Java-21092026-src/examples"/>
+	<classpathentry kind="src" path="ALASCA-etape-1/BCM4Java-21092026-src/examples-basic-plugins"/>
+	<classpathentry kind="src" path="ALASCA-etape-1/BCM4Java-21092026-src/src"/>
+	<classpathentry kind="src" path="ALASCA-etape-1/BCM4Java-21092026-src/src-basic-plugins"/>
+	<classpathentry kind="src" path="ALASCA-etape-1/BCM4Java-21092026-src/test_tools"/>
+	<classpathentry kind="src" path="ALASCA-etape-1/HEM-2026-etape1-21092026-src/hem-2026-base"/>
+	<classpathentry kind="src" path="ALASCA-etape-1/HEM-2026-etape1-21092026-src/hem-2026-e1"/>
+	<classpathentry kind="lib" path="ALASCA-etape-1/BCM4Java-21092026.jar"/>
+	<classpathentry kind="lib" path="ALASCA-etape-1/BCM4JavaCyPhy-21092026.jar"/>
+	<classpathentry kind="lib" path="ALASCA-etape-1/commons-math3-3.6.1.jar"/>
+	<classpathentry kind="lib" path="ALASCA-etape-1/javassist.jar"/>
+	<classpathentry kind="lib" path="ALASCA-etape-1/jing.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
