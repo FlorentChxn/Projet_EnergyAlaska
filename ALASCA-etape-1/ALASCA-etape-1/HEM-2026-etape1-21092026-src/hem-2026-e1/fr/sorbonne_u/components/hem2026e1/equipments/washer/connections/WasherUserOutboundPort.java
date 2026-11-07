@@ -39,6 +39,10 @@ public class WasherUserOutboundPort extends AbstractOutboundPort implements Wash
     public void turnOnWasher() throws Exception{
         ((WasherUserCI)this.getConnector()).turnOnWasher();
     }
+    @Override
+    public void startWasher() throws Exception{
+        ((WasherUserCI)this.getConnector()).startWasher();
+    }
 	@Override
     public void setMode(WasherMode mode) throws Exception{
         ((WasherUserCI)this.getConnector()).setMode(mode);
@@ -50,17 +54,5 @@ public class WasherUserOutboundPort extends AbstractOutboundPort implements Wash
 	@Override
     public void setSpinSpeed(WasherSpinSpeed spinSpeed) throws Exception{
         ((WasherUserCI)this.getConnector()).setSpinSpeed(spinSpeed);
-    }
-	@Override
-    public void isOnWasher() throws Exception{
-    	((WasherUserCI)this.getConnector()).isOnWasher();
-    }
-	@Override
-    public void resume() throws Exception{
-    	((WasherUserCI)this.getConnector()).resume();
-    }
-	@Override
-    public void suspend() throws Exception{
-    	((WasherUserCI)this.getConnector()).suspend();
     }
 }

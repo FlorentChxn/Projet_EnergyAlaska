@@ -35,7 +35,10 @@ public class CookTopOutboundPort extends AbstractOutboundPort implements CookTop
     public void turnOffCookTop() throws Exception {
         ((CookTopUserCI)this.getConnector()).turnOffCookTop();
     }
-
+    @Override
+    public boolean isOn() throws Exception {
+        return ((CookTopUserCI)this.getConnector()).isOn();
+    }
     @Override
     public void turnOnZone(int indexZone) throws Exception {
         ((CookTopUserCI)this.getConnector()).turnOnZone(indexZone);

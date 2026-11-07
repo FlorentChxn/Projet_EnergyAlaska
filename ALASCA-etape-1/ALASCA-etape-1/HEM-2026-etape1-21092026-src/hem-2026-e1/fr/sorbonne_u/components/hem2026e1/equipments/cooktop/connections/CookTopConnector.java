@@ -16,6 +16,10 @@ public class CookTopConnector extends AbstractConnector implements CookTopUserCI
     }
 
     @Override
+    public boolean isOn() throws Exception {
+        return ((CookTopUserCI)this.offering).isOn();
+    }
+    @Override
     public void turnOnCookTop() throws Exception {
         ((CookTopUserCI)this.offering).turnOnCookTop();
     }

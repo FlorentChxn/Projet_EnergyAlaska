@@ -12,11 +12,8 @@ public interface WasherExternalControlCI extends RequiredCI, OfferedCI, WasherCo
     public WasherMode getMode() throws Exception;
     public WasherTemperature getTemperature() throws Exception;
     public WasherSpinSpeed getSpinSpeed() throws Exception;
-    public void setMode(WasherMode mode) throws Exception;
-    public void setTemperature(WasherTemperature temperature) throws Exception;
-    public void setSpinSpeed(WasherSpinSpeed spinSpeed) throws Exception;
-    
-    public void isOnWasher() throws Exception;
+    public boolean isSuspended() throws Exception;
+    public boolean isProgramRunning() throws Exception;
     public void resume() throws Exception;
     public void suspend() throws Exception;
     

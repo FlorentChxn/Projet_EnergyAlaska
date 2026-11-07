@@ -10,6 +10,7 @@ public interface CookTopImplementationI extends CookTopConfigurationI {
     public int getPower(int indexZone) throws Exception;
     public void turnOnCookTop() throws Exception;
     public void turnOffCookTop() throws Exception;
+    public boolean isOn() throws Exception;
     public void turnOnZone(int indexZone) throws Exception;
     public void turnOffZone(int indexZone) throws Exception;
     public void increasePowerZone(int indexZone) throws Exception;

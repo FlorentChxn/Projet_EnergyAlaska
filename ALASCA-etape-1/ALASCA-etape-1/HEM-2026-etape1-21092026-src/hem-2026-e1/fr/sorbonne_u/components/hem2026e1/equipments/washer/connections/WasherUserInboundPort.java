@@ -5,7 +5,6 @@ import fr.sorbonne_u.exceptions.PreconditionException;
 import fr.sorbonne_u.components.ComponentI;
 import fr.sorbonne_u.components.hem2026e1.equipments.washer.interfaces.WasherUserCI;
 import fr.sorbonne_u.components.hem2026e1.equipments.washer.interfaces.WasherImplementationI;
-import fr.sorbonne_u.components.hem2026e1.equipments.washer.interfaces.WasherExternalControlI;
 
 public class WasherUserInboundPort extends AbstractInboundPort implements WasherUserCI{
 	private static final long serialVersionUID = 1L;
@@ -17,6 +16,15 @@ public class WasherUserInboundPort extends AbstractInboundPort implements Washer
     
     public WasherUserInboundPort(ComponentI owner) throws Exception {
     	super(WasherUserCI.class, owner);
+        assert owner instanceof WasherImplementationI : new PreconditionException("owner instanceof WasherImplementationI");
+    }
+
+    public WasherUserInboundPort( Class<? extends WasherUserCI> implementedInterface, ComponentI owner) throws Exception {
+        super(implementedInterface, owner);
+        assert owner instanceof WasherImplementationI : new PreconditionException("owner instanceof WasherImplementationI");
+    }
+    public WasherUserInboundPort(String uri, Class<? extends WasherUserCI> implementedInterface, ComponentI owner) throws Exception {
+        super(uri, implementedInterface, owner);
         assert owner instanceof WasherImplementationI : new PreconditionException("owner instanceof WasherImplementationI");
     }
     @Override
@@ -50,6 +58,13 @@ public class WasherUserInboundPort extends AbstractInboundPort implements Washer
         });
     }
     @Override
+    public void startWasher() throws Exception{
+        this.getOwner().handleRequest(o -> {
+            ((WasherImplementationI)o).startWasher();
+            return null;
+        });
+    }
+    @Override
     public void setMode(WasherMode mode) throws Exception{
         this.getOwner().handleRequest(o -> {
             ((WasherImplementationI)o).setMode(mode);
@@ -67,27 +82,6 @@ public class WasherUserInboundPort extends AbstractInboundPort implements Washer
     public void setSpinSpeed(WasherSpinSpeed spinSpeed) throws Exception{
         this.getOwner().handleRequest(o -> {
             ((WasherImplementationI)o).setSpinSpeed(spinSpeed);
-            return null;
-        });
-    }
-    @Override
-    public void isOnWasher() throws Exception{
-        this.getOwner().handleRequest(o -> {
-            ((WasherExternalControlI)o).isOnWasher();
-            return null;
-        });
-    }
-    @Override
-    public void resume() throws Exception{
-        this.getOwner().handleRequest(o -> {
-            ((WasherExternalControlI)o).resume();
-            return null;
-        });
-    }
-    @Override
-    public void suspend() throws Exception{
-        this.getOwner().handleRequest(o -> {
-            ((WasherExternalControlI)o).suspend();
             return null;
         });
     }

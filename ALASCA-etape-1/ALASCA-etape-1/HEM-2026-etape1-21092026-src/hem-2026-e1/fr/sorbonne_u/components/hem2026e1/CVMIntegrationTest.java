@@ -41,6 +41,7 @@ import fr.sorbonne_u.components.hem2026e1.equipments.hairdryer.HairDryerTester;
 import fr.sorbonne_u.components.hem2026e1.equipments.heater.Heater;
 import fr.sorbonne_u.components.hem2026e1.equipments.heater.HeaterUnitTester;
 import fr.sorbonne_u.components.hem2026e1.equipments.hem.HEM;
+import fr.sorbonne_u.components.hem2026e1.equipments.hem.MyHEM;
 import fr.sorbonne_u.components.hem2026e1.equipments.meter.ElectricMeter;
 import fr.sorbonne_u.components.hem2026e1.equipments.solar_panel.SolarPanel;
 import fr.sorbonne_u.components.hem2026e1.equipments.weather_station.WeatherStation;
@@ -308,7 +309,7 @@ extends		AbstractCVM
 				new Object[]{false});
 
 		AbstractComponent.createComponent(
-				HEM.class.getCanonicalName(),
+				MyHEM.class.getCanonicalName(),
 				new Object[]{});
 
 		super.deploy();

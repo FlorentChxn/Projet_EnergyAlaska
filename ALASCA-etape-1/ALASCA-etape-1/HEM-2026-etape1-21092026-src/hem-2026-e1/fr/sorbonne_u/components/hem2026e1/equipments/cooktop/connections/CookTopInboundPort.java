@@ -31,6 +31,11 @@ public class CookTopInboundPort extends AbstractInboundPort implements CookTopUs
     }
 
     @Override
+    public boolean isOn() throws Exception {
+        return this.getOwner().handleRequest(o -> ((CookTopImplementationI)o).isOn());
+    }
+
+    @Override
     public void turnOnCookTop() throws Exception {
         this.getOwner().handleRequest(o -> {
             ((CookTopImplementationI)o).turnOnCookTop();

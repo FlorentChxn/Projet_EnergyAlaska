@@ -4,6 +4,13 @@ import fr.sorbonne_u.components.interfaces.OfferedCI;
 import fr.sorbonne_u.components.interfaces.RequiredCI;
 
 public interface WasherInternalControlCI extends OfferedCI , RequiredCI, WasherConfigurationI {
+
+    public static boolean staticInvariants() throws Exception {
+        boolean ret = true;
+        ret &= WasherConfigurationI.staticInvariants();
+        return ret;
+    }
+    
     public WasherState getState() throws Exception;
     public WasherMode getMode() throws Exception;
     public WasherTemperature getTemperature() throws Exception;
@@ -14,6 +21,12 @@ public interface WasherInternalControlCI extends OfferedCI , RequiredCI, WasherC
     public void turnOffWasher() throws Exception;
     public void turnOnWasher() throws Exception;
     public void startWasher() throws Exception;
-    public boolean isDelayedSart() throws Exception;
+    public void startFilling() throws Exception;
+    public void startWashing() throws Exception;
+    public void startDraining() throws Exception;
+    public void startRinsing() throws Exception;
+    public void startSpinning() throws Exception;
+    public void finishProgram() throws Exception;
+    public boolean isDelayedStart() throws Exception;
     public void setDelayedStart(boolean delayedStart) throws Exception;
 }
