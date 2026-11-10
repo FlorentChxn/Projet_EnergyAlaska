@@ -10,7 +10,7 @@ import fr.sorbonne_u.components.hem2026.bases.parser.InstanceVariableDescriptor;
 import fr.sorbonne_u.components.hem2026.bases.parser.MethodeDescriptor;
 // -----------------------------------------------------------------------------
 /**
- *
+ * 
  * <p><strong>Description</strong></p>
  * 
  * <p>
@@ -22,15 +22,55 @@ import fr.sorbonne_u.components.hem2026.bases.parser.MethodeDescriptor;
  */
 public class ControlAdapterGenerator {
     
+    //-----------------------------------------------------------------------------
+    // Instance variables
+    //-----------------------------------------------------------------------------
+
+    /**the descriptor of the control adapter.*/
     private final ControlAdapterDescriptor descriptor;
+    /**the package name of the generated classes.*/
     private final static String packageName = "fr.sorbonne_u.components.hem2026";
+    /**the verbose mode of the generator.*/
     public static boolean VERBOSE = false;
+    /**a map to store the generated classes.*/
     public final static Map<String, Class<?>> tabGeneratedClass = new HashMap<String, Class<?>>();
 
+    //-----------------------------------------------------------------------------
+    // Constructors
+    //-----------------------------------------------------------------------------
+    /**
+     * create a control adapter generator.
+     *
+     * <p><strong>Contract</strong></p>
+     *
+     * <pre>
+     * pre	{@code descriptor != null}
+     * post	{@code true}	// no postcondition.
+     * </pre>
+     *
+     * @param descriptor the descriptor of the control adapter.
+     */
     public ControlAdapterGenerator(ControlAdapterDescriptor descriptor) {
         this.descriptor = descriptor;
     }
 
+    //-----------------------------------------------------------------------------
+    // Methods
+    //-----------------------------------------------------------------------------
+
+    /**
+     * generate the class of the control adapter.
+     *
+     * <p><strong>Contract</strong></p>
+     *
+     * <pre>
+     * pre	{@code true}	// no precondition.
+     * post	{@code true}	// no postcondition.
+     * </pre>
+     *
+     * @return the class of the control adapter.
+     * @throws Exception if the class cannot be generated.
+     */
     public Class<?> generatorClass() throws Exception {
         // création de la classe + héritage + implementation + constructeur par défaut
         String className = packageName + ".generated.Connector_" + this.descriptor.getUid() ;
@@ -65,6 +105,20 @@ public class ControlAdapterGenerator {
         }
     }
 
+    /**
+     * add the required imports to the class pool.
+     *
+     * <p><strong>Contract</strong></p>
+     *
+     * <pre>
+     * pre	{@code pool != null && imports != null}
+     * post	{@code true}	// no postcondition.
+     * </pre>
+     *
+     * @param pool the class pool.
+     * @param imports the list of required imports.
+     * @throws Exception if the imports cannot be added.
+     */
     public void addRequiredImports (ClassPool pool, List<String> imports) throws Exception {
         // Ajout d'import à la classe générée
         for (String importStr : imports) {
@@ -83,6 +137,20 @@ public class ControlAdapterGenerator {
         }
     }
 
+    /**
+     * add the instance variables to the class.
+     *
+     * <p><strong>Contract</strong></p>
+     *
+     * <pre>
+     * pre	{@code cc != null && instances != null}
+     * post	{@code true}	// no postcondition.
+     * </pre>
+     *
+     * @param cc the class to which the instance variables will be added.
+     * @param instances the list of instance variables.
+     * @throws Exception if the instance variables cannot be added.
+     */
     public void addInstance (CtClass cc,List<InstanceVariableDescriptor> instances) throws Exception {
         // Ajout d'une variable d'instance à la classe générée
         try {
@@ -105,6 +173,21 @@ public class ControlAdapterGenerator {
         }
     }
 
+    /**
+     * add the methods to the class.
+     *
+     * <p><strong>Contract</strong></p>
+     *
+     * <pre>
+     * pre	{@code pool != null && cc != null && methods != null}
+     * post	{@code true}	// no postcondition.
+     * </pre>
+     *
+     * @param pool the class pool.
+     * @param cc the class to which the methods will be added.
+     * @param methods the list of methods.
+     * @throws Exception if the methods cannot be added.
+     */
     public void addMethods (ClassPool pool, CtClass cc,List<MethodeDescriptor> methods) throws Exception {
         // Ajout d'une méthode à la classe générée
         try {
@@ -139,6 +222,21 @@ public class ControlAdapterGenerator {
         }
     }
 
+    /**
+     * get the return type of a method in the AdjustableCI class.
+     *
+     * <p><strong>Contract</strong></p>
+     *
+     * <pre>
+     * pre	{@code pool != null && name != null && !name.isEmpty()}
+     * post	{@code true}	// no postcondition.
+     * </pre>
+     *
+     * @param pool the class pool.
+     * @param name the name of the method.
+     * @return the return type of the method.
+     * @throws Exception if the return type cannot be retrieved.
+     */
     public String getTypeMethodAdjustableCI (ClassPool pool,String name)throws Exception {
         CtClass cc = pool.get(packageName + ".bases.AdjustableCI");
         String typeMethod = cc.getDeclaredMethod(name).getReturnType().getName();
@@ -148,6 +246,21 @@ public class ControlAdapterGenerator {
         return typeMethod;
     }
 
+    /**
+     * get the parameter list of a method.
+     *
+     * <p><strong>Contract</strong></p>
+     *
+     * <pre>
+     * pre	{@code pool != null && methode != null}
+     * post	{@code true}	// no postcondition.
+     * </pre>
+     *
+     * @param pool the class pool.
+     * @param methode the method descriptor.
+     * @return the parameter list of the method.
+     * @throws Exception if the parameter list cannot be retrieved.
+     */
     public String getParameterList(ClassPool pool, MethodeDescriptor methode) {
         List<MethodeDescriptor.ParameterDescriptor> parameters = methode.getParameters();
         StringBuilder result = new StringBuilder();
@@ -169,6 +282,22 @@ public class ControlAdapterGenerator {
         return result.toString();
     }
 
+    /**
+     * get the type of a parameter in the AdjustableCI class.
+     *
+     * <p><strong>Contract</strong></p>
+     *
+     * <pre>
+     * pre	{@code pool != null && name != null && !name.isEmpty() && index >= 0}
+     * post	{@code true}	// no postcondition.
+     * </pre>
+     *
+     * @param pool the class pool.
+     * @param name the name of the method.
+     * @param index the index of the parameter.
+     * @return the type of the parameter.
+     * @throws Exception if the type cannot be retrieved.
+     */
     public String getTypeParametreAdjustableCI (ClassPool pool,String name, int index)throws Exception {
         CtClass cc = pool.get(packageName + ".bases.AdjustableCI");
         CtMethod method = cc.getDeclaredMethod(name);
@@ -176,6 +305,19 @@ public class ControlAdapterGenerator {
         return paraType[index].getName();
     }
 
+    /**
+     * get the exception list of a method.
+     *
+     * <p><strong>Contract</strong></p>
+     *
+     * <pre>
+     * pre	{@code methode != null}
+     * post	{@code true}	// no postcondition.
+     * </pre>
+     *
+     * @param methode the method descriptor.
+     * @return the exception list of the method.
+     */
     public String getExceptionList(MethodeDescriptor methode) {
         List<String> exceptions = methode.getExceptions();
         if (exceptions == null || exceptions.isEmpty()) {
@@ -190,7 +332,20 @@ public class ControlAdapterGenerator {
         }
         return result;
     }
-    
+
+    /**
+     * get the exception of a method in the AdjustableCI class.
+     *
+     * <p><strong>Contract</strong></p>
+     *
+     * <pre>
+     * pre	{@code name != null && !name.isEmpty()}
+     * post	{@code true}	// no postcondition.
+     * </pre>
+     *
+     * @param name the name of the method.
+     * @return the exception of the method.
+     */
     public String getAdjustableException(String name) {
         if ("maxMode".equals(name) || "upMode".equals(name) || "downMode".equals(name) || "currentMode".equals(name) || "setMode".equals(name) || "currentMode".equals(name) || "getModeConsumption".equals(name) || "suspended".equals(name) || "suspend".equals(name) || "resume".equals(name) || "emergency".equals(name)) {
             return "java.lang.Exception";

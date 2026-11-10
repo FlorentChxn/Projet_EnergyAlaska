@@ -37,6 +37,18 @@ public class ControlAdapterParserXML {
     // -------------------------------------------------------------------------
     // Constructors
     // -------------------------------------------------------------------------
+    /**
+     * create a control adapter parser.
+     *
+     * <p><strong>Contract</strong></p>
+     *
+     * <pre>
+     * pre	{@code true}	// no precondition.
+     * post	{@code true}	// no postcondition.
+     * </pre>
+     *
+     * @throws Exception if the parser cannot be created.
+     */
     public ControlAdapterParserXML() throws Exception {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
@@ -47,6 +59,20 @@ public class ControlAdapterParserXML {
         }
     }
 
+    /**
+     * parse an XML file and return a control adapter descriptor.
+     *
+     * <p><strong>Contract</strong></p>
+     *
+     * <pre>
+     * pre	{@code xmlFilePath != null && !xmlFilePath.isEmpty()}
+     * post	{@code true}	// no postcondition.
+     * </pre>
+     *
+     * @param xmlFilePath the path to the XML file to parse.
+     * @return the control adapter descriptor.
+     * @throws Exception if the XML file cannot be parsed.
+     */
     public ControlAdapterDescriptor parse( String xmlFilePath ) throws Exception {
         if (xmlFilePath == null || xmlFilePath.isEmpty()) throw new IllegalArgumentException("xmlFilePath must not be empty");
         Document doc = null;
@@ -90,6 +116,20 @@ public class ControlAdapterParserXML {
     // -------------------------------------------------------------------------
     // Methods
     // -------------------------------------------------------------------------
+
+    /**
+     * list the children of an element.
+     *
+     * <p><strong>Contract</strong></p>
+     *
+     * <pre>
+     * pre	{@code parent != null}
+     * post	{@code true}	// no postcondition.
+     * </pre>
+     *
+     * @param parent the parent element.
+     * @return the list of children.
+     */
     public static List<Element> listChildren (Element parent) {
         List<Element> result = new ArrayList<Element>();
         NodeList liste = parent.getChildNodes();
@@ -100,6 +140,19 @@ public class ControlAdapterParserXML {
         return result;
     }
 
+    /**
+     * parse a method element and return a method descriptor.
+     *
+     * <p><strong>Contract</strong></p>
+     *
+     * <pre>
+     * pre	{@code element != null}
+     * post	{@code true}	// no postcondition.
+     * </pre>
+     *
+     * @param element the method element to parse.
+     * @return the method descriptor.
+     */
     public static MethodeDescriptor parseMethode (Element element) {
         List<MethodeDescriptor.ParameterDescriptor> parameters = new ArrayList<MethodeDescriptor.ParameterDescriptor>();
         List<String> thrown = new ArrayList<String>();
@@ -121,7 +174,21 @@ public class ControlAdapterParserXML {
         return new MethodeDescriptor(element.getLocalName(),null,null, parameters, thrown, body.getAttribute("equipmentRef"), body.getTextContent());
     }
 
+    /**
+     * return true if the method name is a valid method name, false otherwise.
+     *
+     * <p><strong>Contract</strong></p>
+     *
+     * <pre>
+     * pre	{@code name != null && !name.isEmpty()}
+     * post	{@code true}	// no postcondition.
+     * </pre>
+     *
+     * @param name the method name to check.
+     * @return true if the method name is a valid method name, false otherwise.
+     */
     public static boolean isMethode(String name) {
+        if(name == null || name.isEmpty()) throw new IllegalArgumentException("name must not be empty");
         return "maxMode".equals(name) || "upMode".equals(name) || "downMode".equals(name) || "currentMode".equals(name) || "setMode".equals(name) || "currentMode".equals(name) || "getModeConsumption".equals(name) || "suspended".equals(name) || "suspend".equals(name) || "resume".equals(name) || "emergency".equals(name);
     }
 }
