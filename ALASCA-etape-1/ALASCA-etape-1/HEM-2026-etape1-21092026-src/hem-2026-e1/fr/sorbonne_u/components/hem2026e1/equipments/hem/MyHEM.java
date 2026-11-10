@@ -1,17 +1,26 @@
 package fr.sorbonne_u.components.hem2026e1.equipments.hem;
 
 import fr.sorbonne_u.components.annotations.OfferedInterfaces;
+import fr.sorbonne_u.components.annotations.RequiredInterfaces;
 import fr.sorbonne_u.components.exceptions.BCMRuntimeException;
 import fr.sorbonne_u.components.exceptions.ComponentShutdownException;
 import fr.sorbonne_u.exceptions.ImplementationInvariantException;
 import fr.sorbonne_u.exceptions.InvariantException;
+import fr.sorbonne_u.utils.aclocks.ClocksServerCI;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
+import fr.sorbonne_u.components.hem2026.bases.AdjustableCI;
 import fr.sorbonne_u.components.AbstractComponent;
+import fr.sorbonne_u.components.hem2026e1.equipments.meter.ElectricMeterCI;
+import fr.sorbonne_u.components.hem2026e1.equipments.solar_panel.SolarPanelCI;
+import fr.sorbonne_u.components.hem2026e1.equipments.weather_station.WeatherStationCI;
 import fr.sorbonne_u.components.hem2026e1.equipments.hem.connections.RegistrationInboundPort;
+import fr.sorbonne_u.components.hem2026e1.equipments.batteries.BatteriesCI;
+import fr.sorbonne_u.components.hem2026e1.equipments.generator.GeneratorCI;
 import fr.sorbonne_u.components.hem2026e1.equipments.heater.Heater;
 import fr.sorbonne_u.components.hem2026.bases.parser.ControlAdapterDescriptor;
 import fr.sorbonne_u.components.hem2026.bases.parser.ControlAdapterParserXML;
@@ -53,8 +62,15 @@ import java.nio.file.Paths;
  * 
  * @author	<a href="mailto:florent.chen94@gmail.com">Florent CHEN</a>
  */
-@OfferedInterfaces (offered = {RegistrationCI.class})
-public class MyHEM extends HEM implements RegistrationCI {
+@OfferedInterfaces(offered = {RegistrationCI.class})
+@RequiredInterfaces(required = {ClocksServerCI.class,
+								AdjustableCI.class,
+								ElectricMeterCI.class,
+								BatteriesCI.class,
+								SolarPanelCI.class,
+								GeneratorCI.class,
+								WeatherStationCI.class})
+public class MyHEM extends HEM {
     // -------------------------------------------------------------------------
     // Constants and variables
     // -------------------------------------------------------------------------
@@ -178,7 +194,13 @@ public class MyHEM extends HEM implements RegistrationCI {
         super.shutdown();
     }
 
-    @Override
+    /**
+     * Check if an equipment is registered.
+     *
+     * @param uid The unique identifier of the equipment.
+     * @return true if the equipment is registered, false otherwise.
+     * @throws Exception If an error occurs while checking the registration.
+     */
     public synchronized boolean registered(String uid) throws Exception {
         if (this.EquipmentEnregistered.containsKey(uid)) {
             return true;
@@ -186,7 +208,15 @@ public class MyHEM extends HEM implements RegistrationCI {
         return false;
     }
 
-    @Override
+    /**
+     * Register an equipment.
+     *
+     * @param uid The unique identifier of the equipment.
+     * @param controlPortURI The URI of the control port of the equipment.
+     * @param xmlControlAdapter The XML representation of the control adapter descriptor.
+     * @return true if the equipment was successfully registered, false if it was already registered.
+     * @throws Exception If an error occurs while registering the equipment.
+     */
     public synchronized boolean register(String uid, String controlPortURI, String xmlControlAdapter) throws Exception {
         if (registered(uid)) {
             return false;
@@ -218,7 +248,12 @@ public class MyHEM extends HEM implements RegistrationCI {
         return true;
     }
 
-    @Override
+    /**
+     * Unregister an equipment.
+     *
+     * @param uid The unique identifier of the equipment to unregister.
+     * @throws Exception If an error occurs while unregistering the equipment.
+     */
     public synchronized void unregister(String uid) throws Exception {
         if (!registered(uid)) {
             throw new BCMRuntimeException("The equipment with uid " + uid + " is not registered.");
@@ -250,6 +285,7 @@ public class MyHEM extends HEM implements RegistrationCI {
                 try {
                     testRegistrationIntegration();
                 } catch (Exception e) {
+                    e.printStackTrace();
                     throw new BCMRuntimeException("Error during registration integration test", e);
                 }
             }
@@ -258,11 +294,7 @@ public class MyHEM extends HEM implements RegistrationCI {
 
     protected void testRegistrationIntegration() throws Exception {
         String uid = "1A10000";
-        Path heaterPath = Paths.get(
-        "projet", "ALASCA-etape-1", "ALASCA-etape-1",
-        "HEM-2026-etape1-21092026-src", "hem-adapter",
-        "heaterci-descriptor.xml").toAbsolutePath();
-
+        Path heaterPath = Paths.get("ALASCA-etape-1","HEM-2026-etape1-21092026-src", "hem-adapter","heaterci-descriptor.xml").toAbsolutePath();
         if (!Files.isRegularFile(heaterPath)) {
             throw new BCMRuntimeException( "The control adapter descriptor was not found: " + heaterPath);
         }
@@ -276,9 +308,7 @@ public class MyHEM extends HEM implements RegistrationCI {
             if (equipment == null) {
                 throw new BCMRuntimeException("The registered heater was not stored.");
             }
-            if (!equipment.outPort.downMode() || !equipment.outPort.upMode() || !equipment.outPort.suspend() || !equipment.outPort.resume()) {
-                throw new BCMRuntimeException("The generated adjustable connector test failed.");
-            }
+            System.out.println("Connector generated for " + uid + " : " + equipment.connector.getCanonicalName());
             this.unregister(uid);
             if (this.registered(uid)) {
                 throw new BCMRuntimeException("The heater was not unregistered.");

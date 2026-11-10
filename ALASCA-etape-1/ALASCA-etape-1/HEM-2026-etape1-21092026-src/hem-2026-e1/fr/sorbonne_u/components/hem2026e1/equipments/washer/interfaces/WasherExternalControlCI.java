@@ -2,19 +2,18 @@ package fr.sorbonne_u.components.hem2026e1.equipments.washer.interfaces;
 import fr.sorbonne_u.components.interfaces.OfferedCI;
 import fr.sorbonne_u.components.interfaces.RequiredCI;
 
-public interface WasherExternalControlCI extends RequiredCI, OfferedCI, WasherConfigurationI {
-    public static boolean staticInvariants() throws Exception {
-        boolean ret = true;
-        ret &= WasherConfigurationI.staticInvariants();
-        return ret;
-    }
-    public WasherState getState() throws Exception;
-    public WasherMode getMode() throws Exception;
-    public WasherTemperature getTemperature() throws Exception;
-    public WasherSpinSpeed getSpinSpeed() throws Exception;
-    public boolean isSuspended() throws Exception;
-    public boolean isProgramRunning() throws Exception;
-    public void resume() throws Exception;
-    public void suspend() throws Exception;
-    
+// -----------------------------------------------------------------------------
+/**
+ * The component interface <code>WasherExternalControlCI</code> declares the
+ * signatures of services used by the household energy manager to adjust
+ * the power consumption of the washer.
+ *
+ * <p><strong>Description</strong></p>
+ *
+ * 
+ * <p>Created on : 2026-10-14</p>
+ * 
+ * @author	<a href="mailto:Florent.chen94@gmail.com">Florent CHEN</a>
+ */
+public interface WasherExternalControlCI extends RequiredCI, OfferedCI, WasherExternalControlI {
 }
