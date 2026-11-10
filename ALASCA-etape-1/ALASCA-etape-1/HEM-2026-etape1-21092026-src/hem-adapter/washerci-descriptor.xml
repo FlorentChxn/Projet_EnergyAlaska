@@ -1,0 +1,34 @@
+<control-adapter
+    xmlns="http://www.sorbonne-universite.fr/alasca/control-adapter"
+    uid="1A10001"
+    offered="fr.sorbonne_u.components.hem2026e1.equipments.washer.interfaces.WasherExternalControlJava4CI">
+  <consumption nominal="2200"/>
+  <required>fr.sorbonne_u.components.hem2026e1.equipments.washer.interfaces.WasherExternalControlJava4CI</required>
+  <maxMode><body>return 1;</body></maxMode>
+  <upMode><body>return false;</body></upMode>
+  <downMode><body>return false;</body></downMode>
+  <setMode>
+    <parameter name="modeIndex" type="int"/>
+    <body>return true;</body>
+  </setMode>
+  <currentMode><body>return 1;</body></currentMode>
+  <getModeConsumption>
+  	<parameter name="modeIndex" type="int"/>
+  	<body>return 2200.0;</body>
+  </getModeConsumption>
+  <suspended equipmentRef="washer">
+    <body>return washer.isSuspended();</body>
+  </suspended>
+  <suspend>
+    <body equipmentRef="washer">
+      washer.suspend();
+      return washer.isSuspended();</body>
+  </suspend>
+  <resume>
+    <body equipmentRef="washer">
+        washer.resume();
+        return !washer.isSuspended();</body>
+    </body>
+  </resume>
+  <emergency><body>return 0.0;</body></emergency>
+</control-adapter>

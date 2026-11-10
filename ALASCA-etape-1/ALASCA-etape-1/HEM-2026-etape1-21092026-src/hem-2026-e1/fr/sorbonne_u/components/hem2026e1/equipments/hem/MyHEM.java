@@ -18,6 +18,7 @@ import fr.sorbonne_u.components.AbstractComponent;
 import fr.sorbonne_u.components.hem2026e1.equipments.meter.ElectricMeterCI;
 import fr.sorbonne_u.components.hem2026e1.equipments.solar_panel.SolarPanelCI;
 import fr.sorbonne_u.components.hem2026e1.equipments.weather_station.WeatherStationCI;
+import fr.sorbonne_u.components.utils.tests.TestsStatistics;
 import fr.sorbonne_u.components.hem2026e1.equipments.hem.connections.RegistrationInboundPort;
 import fr.sorbonne_u.components.hem2026e1.equipments.batteries.BatteriesCI;
 import fr.sorbonne_u.components.hem2026e1.equipments.generator.GeneratorCI;
@@ -26,6 +27,7 @@ import fr.sorbonne_u.components.hem2026.bases.parser.ControlAdapterDescriptor;
 import fr.sorbonne_u.components.hem2026.bases.parser.ControlAdapterParserXML;
 import fr.sorbonne_u.components.hem2026.bases.ControlAdapterGenerator;
 import fr.sorbonne_u.components.hem2026.bases.RegistrationCI;
+import fr.sorbonne_u.components.hem2026e1.equipments.washer.Washer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -64,20 +66,21 @@ import java.nio.file.Paths;
  */
 @OfferedInterfaces(offered = {RegistrationCI.class})
 @RequiredInterfaces(required = {ClocksServerCI.class,
-								AdjustableCI.class,
-								ElectricMeterCI.class,
-								BatteriesCI.class,
-								SolarPanelCI.class,
-								GeneratorCI.class,
-								WeatherStationCI.class})
+                                AdjustableCI.class,
+                                ElectricMeterCI.class,
+                                BatteriesCI.class,
+                                SolarPanelCI.class,
+                                GeneratorCI.class,
+                                WeatherStationCI.class})
 public class MyHEM extends HEM {
     // -------------------------------------------------------------------------
     // Constants and variables
     // -------------------------------------------------------------------------
 
-    protected final String REGISTRATION_INBOUND_PORT_URI = "HEM-REGISTRATION-INBOUND-PORT-URI";
+    public final String REGISTRATION_INBOUND_PORT_URI = "HEM-REGISTRATION-INBOUND-PORT-URI";
 
     protected final RegistrationInboundPort rip;
+
     // Execution/Simulation
 
     protected final Map<String, EquipementEnregistered>	EquipmentEnregistered ;
@@ -139,12 +142,6 @@ public class MyHEM extends HEM {
         this.rip = new RegistrationInboundPort(REGISTRATION_INBOUND_PORT_URI,this);
         this.rip.publishPort();
 
-        if (VERBOSE) {
-            this.tracer.get().setTitle("Home Energy Manager component");
-            this.tracer.get().setRelativePosition(X_RELATIVE_POSITION, Y_RELATIVE_POSITION);
-            this.toggleTracing();
-        }
-
         assert HEM.implementationInvariants(this) : new ImplementationInvariantException("HEM.implementationInvariants(this)");
         assert HEM.invariants(this) : new InvariantException("HEM.invariants(this)");
     }
@@ -161,6 +158,7 @@ public class MyHEM extends HEM {
         super.execute();
         if (this.performTest) {
             this.scheduleRegistrationIntegrationTest();
+            this.scheduleTestWasher();
         }
     }
 
@@ -304,6 +302,7 @@ public class MyHEM extends HEM {
             if (!registered || !this.registered(uid)) {
                 throw new BCMRuntimeException("The heater registration test failed.");
             }
+            this.logMessage("Heater registered successfully.");
             EquipementEnregistered equipment = this.EquipmentEnregistered.get(uid);
             if (equipment == null) {
                 throw new BCMRuntimeException("The registered heater was not stored.");
@@ -320,5 +319,182 @@ public class MyHEM extends HEM {
                 this.unregister(uid);
             }
         }
+    }
+
+    protected void scheduleTestWasher() throws Exception {
+        Instant testStart = this.ac.getStartInstant().plusSeconds(2L);
+        long delay = this.ac.nanoDelayUntilInstant(testStart);
+        this.scheduleTaskOnComponent(new AbstractComponent.AbstractTask(){
+            @Override
+            public void run() {
+                try {
+                    testWasher();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new BCMRuntimeException("Error during washer test", e);
+                }
+            }
+        }, delay, TimeUnit.NANOSECONDS);
+    }
+
+    protected void testWasher() throws Exception {
+        this.logMessage("Washer tests start.");
+        Path washerPath = Paths.get("ALASCA-etape-1","HEM-2026-etape1-21092026-src", "hem-adapter","washerci-descriptor.xml").toAbsolutePath();
+        if (!Files.isRegularFile(washerPath)) {
+            throw new BCMRuntimeException( "The control adapter descriptor was not found: " + washerPath);
+        }
+        TestsStatistics statistics = new TestsStatistics();
+        String washerUid = "1A10001";
+        try {
+            if (!this.registered(washerUid)) {
+                this.register(washerUid, Washer.EXTERNAL_CONTROL_INBOUND_PORT_URI, washerPath.toString());
+            }
+            AdjustableOutboundPort washerop = this.EquipmentEnregistered.get(washerUid).outPort;
+
+            this.logMessage("Feature: adjustable appliance mode management");
+            this.logMessage("  Scenario: Getting the max mode index");
+            this.logMessage("   Given a registered washer with uid " + washerUid);
+            this.logMessage("   When I call maxMode()");
+            int maxMode = washerop.maxMode();
+            if (maxMode != 1) {
+                this.logMessage("    But was: " + maxMode + " instead of 1");
+                statistics.incorrectResult();
+            }
+            this.logMessage("   Then the result is 1");
+            statistics.updateStatistics();
+
+            this.logMessage("  Scenario: Getting the current mode index");
+            this.logMessage("   Given a registered washer with uid " + washerUid);
+            this.logMessage("   When I call currentMode()");
+            int currentMode = washerop.currentMode();
+            if (currentMode != 1) {
+                this.logMessage("    But was: " + currentMode + " instead of 1");
+                statistics.incorrectResult();
+            }
+            this.logMessage("   Then the result is 1");
+            statistics.updateStatistics();
+
+            this.logMessage("  Scenario: going up one mode index");
+            this.logMessage("   Given a registered washer with uid " + washerUid);
+            this.logMessage("   When I call upMode()");
+            boolean upModeResult = washerop.upMode();
+            if (upModeResult) {
+                this.logMessage("    But was: " + upModeResult + " instead of false");
+                statistics.incorrectResult();
+            }
+            this.logMessage("   Then the result is " + upModeResult);
+            currentMode = washerop.currentMode();
+            if (currentMode != 1) {
+                this.logMessage("    But was: " + currentMode + " instead of 1");
+                statistics.incorrectResult();
+            }
+            this.logMessage("    And the current mode is still 1");
+            statistics.updateStatistics();
+
+            this.logMessage("  Scenario: going down one mode index");
+            this.logMessage("   Given a registered washer with uid " + washerUid);
+            this.logMessage("   When I call downMode()");
+            boolean downModeResult = washerop.downMode();
+            if (downModeResult) {
+                this.logMessage("    But was: " + downModeResult + " instead of false");
+                statistics.incorrectResult();
+            }
+            this.logMessage("   Then the result is " + downModeResult);
+            currentMode = washerop.currentMode();
+            if (currentMode != 1) {
+                this.logMessage("    But was: " + currentMode + " instead of 1");
+                statistics.incorrectResult();
+            }
+            this.logMessage("    And the current mode is still 1");
+            statistics.updateStatistics();
+
+            this.logMessage("  Scenario: Getting the mode consumption");
+                        this.logMessage("   Given a registered washer with uid " + washerUid);
+            this.logMessage("   When I call getModeConsumption(1)");
+            double modeConsumption = washerop.getModeConsumption(1);
+            if (modeConsumption != 2200.0) {
+                this.logMessage("    But was: " + modeConsumption );
+                statistics.incorrectResult();
+            }
+            this.logMessage("   Then the result is " + modeConsumption);
+            statistics.updateStatistics();
+
+            this.logMessage("  Scenario: Setting the mode");
+            this.logMessage("   Given a registered washer with uid " + washerUid);
+            this.logMessage("   When I call setMode(1)");
+            boolean setModeResult = washerop.setMode(1);
+            if (!setModeResult) {
+                this.logMessage("    But was: " + setModeResult );
+                statistics.incorrectResult();
+            }
+            this.logMessage("   Then the result is " + setModeResult);
+            currentMode = washerop.currentMode();
+            if (currentMode != 1) {
+                this.logMessage("    But was: " + currentMode + " instead of 1");
+                statistics.incorrectResult();
+            }
+            this.logMessage("    And the current mode is still 1");
+            statistics.updateStatistics();
+
+            this.logMessage("Feature: suspending and resuming");
+            this.logMessage("  Scenario: checking if the washer is suspended");
+            this.logMessage("   Given a registered washer with uid " + washerUid);
+            this.logMessage("   When I call suspend()");
+            boolean suspendResult = washerop.suspend();
+            if (!suspendResult) {
+                this.logMessage("    But was: " + suspendResult );
+                statistics.incorrectResult();
+            }
+            this.logMessage("   Then the result is " + suspendResult);
+            statistics.updateStatistics();
+
+            this.logMessage("  Scenario: checking if the washer is suspended");
+            this.logMessage("   Given a registered washer with uid " + washerUid);
+            this.logMessage("   When I call suspended()");
+            boolean suspendedResult = washerop.suspended();
+            if (!suspendedResult) {
+                this.logMessage("    But was: " + suspendedResult );
+                statistics.incorrectResult();
+            }
+            this.logMessage("   Then the result is " + suspendedResult);
+            statistics.updateStatistics();
+
+            this.logMessage("  Scenario: resuming the washer");
+            this.logMessage("   Given a registered washer with uid " + washerUid);
+            this.logMessage("   When I call resume()");
+            suspendedResult = washerop.suspended();
+            if (!suspendedResult) {
+                this.logMessage("    But was: " + suspendedResult );
+                statistics.incorrectResult();
+            }
+            this.logMessage("   Then the result is " + suspendedResult);
+            boolean resumeResult = washerop.resume();
+            if (!resumeResult) {
+                this.logMessage("    But was: " + resumeResult );
+                statistics.incorrectResult();
+            }
+            this.logMessage("   Then the result is " + resumeResult);
+            statistics.updateStatistics();
+
+            this.logMessage("  Scenario: checking the mergency");
+            this.logMessage("   Given a registered washer with uid " + washerUid);
+            this.logMessage("   When I call emergency()");
+            double emergencyResult = washerop.emergency();
+            if (emergencyResult != 0.0) {
+                this.logMessage("    But was: " + emergencyResult );
+                statistics.incorrectResult();
+            }
+            this.logMessage("   Then the result is " + emergencyResult);
+            statistics.updateStatistics();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (this.registered(washerUid)) {
+            this.unregister(washerUid);
+        }
+        statistics.updateStatistics();
+        statistics.statisticsReport(this);
+        this.logMessage("Washer tests end.");
     }
 }
